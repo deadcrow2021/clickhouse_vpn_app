@@ -1,0 +1,40 @@
+version: '3'
+services:
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: 'python app/test.py'
+    ports:
+      - 8000:8000
+    volumes:
+      - .:/app
+    networks:
+      - clickhouse-network
+    depends_on:
+      - clickhouse
+
+  clickhouse:
+    image: clickhouse/clickhouse-server
+    restart: always
+    ports:
+      - "8123:8123" # HTTP-порт для запросов к ClickHouse
+      - "9000:9000" # Native-порт для запросов к ClickHouse
+    # volumes:
+    #   - ./data/click:/var/lib/clickhouse
+      # - ./config.xml:/etc/clickhouse-server/config.d/config.xml # Файл конфигурации
+    # environment:
+    #   - CLICKHOUSE_USER=&lt;username&gt; # Имя пользователя
+    #   - CLICKHOUSE_PASSWORD=&lt;password&gt; # Пароль пользователя
+    #   - CLICKHOUSE_CONFIG=/etc/clickhouse-server/config.d # Путь к файлам конфигурации
+    networks:
+      - clickhouse-network
+
+networks:
+  clickhouse-network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.25.0.0/16 # Подсеть для контейнеров
