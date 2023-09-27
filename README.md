@@ -19,7 +19,7 @@ cd Desktop/rv_test/
 - Run server
 
 ```
-docker-compose up
+docker-compose up --build
 ```
 
 ## Run Issues 
